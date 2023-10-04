@@ -1,0 +1,12 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     "/Users/apple/tmp/算法/tree/pre-In-Create-tree"
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _preInCreate, symObjAddr: 0x0, symBinAddr: 0x100003890, symSize: 0x130 }
+  - { offsetInCU: 0x7A, offset: 0x7A, size: 0x8, addend: 0x0, symName: _preInCreate, symObjAddr: 0x0, symBinAddr: 0x100003890, symSize: 0x130 }
+  - { offsetInCU: 0x120, offset: 0x120, size: 0x8, addend: 0x0, symName: _printTreePre2, symObjAddr: 0x130, symBinAddr: 0x1000039C0, symSize: 0x120 }
+  - { offsetInCU: 0x19E, offset: 0x19E, size: 0x8, addend: 0x0, symName: _printTreeIn2, symObjAddr: 0x250, symBinAddr: 0x100003AE0, symSize: 0x120 }
+  - { offsetInCU: 0x20D, offset: 0x20D, size: 0x8, addend: 0x0, symName: _printTreePost2, symObjAddr: 0x370, symBinAddr: 0x100003C00, symSize: 0x150 }
+  - { offsetInCU: 0x28B, offset: 0x28B, size: 0x8, addend: 0x0, symName: _printLevelContrary, symObjAddr: 0x4C0, symBinAddr: 0x100003D50, symSize: 0x140 }
+  - { offsetInCU: 0x309, offset: 0x309, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x600, symBinAddr: 0x100003E90, symSize: 0xB6 }
+...

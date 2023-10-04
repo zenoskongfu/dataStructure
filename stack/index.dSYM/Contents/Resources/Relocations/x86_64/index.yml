@@ -1,0 +1,11 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     "/Users/apple/tmp/算法/stack/index"
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _initStack, symObjAddr: 0x0, symBinAddr: 0x100003D80, symSize: 0x20 }
+  - { offsetInCU: 0x41, offset: 0x41, size: 0x8, addend: 0x0, symName: _initStack, symObjAddr: 0x0, symBinAddr: 0x100003D80, symSize: 0x20 }
+  - { offsetInCU: 0x65, offset: 0x65, size: 0x8, addend: 0x0, symName: _pushStack, symObjAddr: 0x20, symBinAddr: 0x100003DA0, symSize: 0x60 }
+  - { offsetInCU: 0x9B, offset: 0x9B, size: 0x8, addend: 0x0, symName: _popStack, symObjAddr: 0x80, symBinAddr: 0x100003E00, symSize: 0x60 }
+  - { offsetInCU: 0xD1, offset: 0xD1, size: 0x8, addend: 0x0, symName: _getStackTop, symObjAddr: 0xE0, symBinAddr: 0x100003E60, symSize: 0x40 }
+  - { offsetInCU: 0xF9, offset: 0xF9, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x120, symBinAddr: 0x100003EA0, symSize: 0xFD }
+...
