@@ -1,29 +1,5 @@
 /**@typedef {{value: number, next: nodeType}} nodeType */
-
-/**@type {nodeType[]} */
-const graphNodes = Array(7)
-	.fill(0)
-	.map((item, index) => {
-		const temp = {};
-		temp.value = index;
-		temp.next = null;
-		return temp;
-	});
-
-const graphEdges = { 1: [2, 4], 2: [5], 3: [5, 6], 4: [2] };
-
-const graph = Object.entries(graphEdges).map(([nodeKey, edges]) => {
-	graphNodes[nodeKey].next = edges.reduce((res, nextEdge) => {
-		const temp = { value: nextEdge, next: null };
-		let tempRes = res;
-		while (tempRes.next) tempRes = tempRes.next;
-		tempRes.next = temp;
-		return res;
-	}, {}).next;
-});
-
-// 创建邻接表
-console.log(graphNodes);
+const { graph: graphNodes, isVisited } = require("./graphData");
 
 const getFirstNode = (graph, baseNode) => {
 	if (graph[baseNode].next === null) return null;
@@ -36,8 +12,6 @@ const getNextNode = (graph, baseNode, currentNode) => {
 	if (node.next === null) return null;
 	return node.next.value;
 };
-
-const isVisited = Array(7).fill(false);
 
 const DFS = (graph, startNode) => {
 	console.log(startNode);
@@ -81,5 +55,3 @@ const DFS2 = (graph, startNode) => {
 };
 
 // DFSTraverse(graphNodes, 3);
-
-const BFS = (graph, startNode) => {};
