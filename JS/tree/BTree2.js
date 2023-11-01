@@ -83,7 +83,7 @@ class BTree {
 	}
 
 	delete(value) {
-		this.root = this._delete(null, this.root, value, null);
+		this._delete(null, this.root, value, null);
 	}
 	/**
 	 *
@@ -95,8 +95,6 @@ class BTree {
 	_delete(parent, node, value, index) {
 		if (node.children.length == 0) {
 			node.keys = node.keys.filter((item) => item !== value);
-			//judge less
-			return this.judgeLess(parent, node, index);
 		} else {
 			let flag = false;
 			for (let i = 0; i < node.keys.length; i++) {
@@ -104,41 +102,19 @@ class BTree {
 					flag = true;
 					const minNode = this.getMinNode(node.children[i + 1]);
 					node.keys.splice(i, 1, minNode);
-					const newTopNode = this._delete(node, node.children[i + 1], minNode, i + 1);
-					if (parent) {
-						parent.children[index] = newTopNode;
-					} else {
-						parent = newTopNode;
-					}
+					this._delete(node, node.children[i + 1], minNode, i + 1);
 					break;
 				} else if (value < node.keys[i]) {
-					const newTopNode = this._delete(node, node.children[i], value, i);
-					if (parent) {
-						parent.children[index] = newTopNode;
-					} else {
-						parent = newTopNode;
-					}
+					this._delete(node, node.children[i], value, i);
 					flag = true;
 					break;
 				}
 			}
 			if (flag == false) {
-				const newTopNode = this._delete(node, node.children.slice(-1)[0], value, node.children.length - 1);
-				if (parent) {
-					parent.children[index] = newTopNode;
-				} else {
-					parent = newTopNode;
-				}
+				this._delete(node, node.children.slice(-1)[0], value, node.children.length - 1);
 			}
-			//需要检查父节点是否有less
-			// const newTopNode = this.judgeLess(parent, node, index);
-			// if (parent) {
-			// 	parent.children[index] = newTopNode;
-			// } else {
-			// 	parent = newTopNode;
-			// }
-			return this.judgeLess(parent, node, index);
 		}
+		this.judgeLess(parent, node, index);
 	}
 
 	/**
@@ -165,7 +141,7 @@ class BTree {
 				if (siblingNodeRight.keys.length > this.minCount) {
 					//blow from right sibling
 					this.blowFromRight(parent, node, index);
-					return parent;
+					return;
 				}
 			} else if (index != 0) {
 				haveLeftSibling = true;
@@ -174,18 +150,17 @@ class BTree {
 				if (siblingNodeLeft.keys.length > this.minCount) {
 					// blow from left sibling
 					this.blowFromLeft(parent, node, index);
-					return parent;
+					return;
 				}
 			}
 			if (haveRightSibling) {
 				// combine right sibling
-				parent = this.combineRightSibling(parent, node, index);
+				this.combineRightSibling(parent, node, index);
 			} else {
 				// combine left sibling
-				parent = this.combineLeftSibling(parent, node, index);
+				this.combineLeftSibling(parent, node, index);
 			}
 		}
-		return parent;
 	}
 	/**
 	 *
@@ -198,7 +173,7 @@ class BTree {
 		const rightFirstKey = rightSibling.keys.shift();
 		const rightFirstChildren = rightSibling.children.shift();
 		node.keys.push(parent.keys[index]);
-		node.children.push(rightFirstChildren);
+		rightFirstChildren && node.children.push(rightFirstChildren);
 
 		parent.keys.splice(index, 1, rightFirstKey);
 	}
@@ -213,7 +188,7 @@ class BTree {
 		const leftLastKey = leftSibling.keys.pop();
 		const leftLastChildren = leftSibling.children.pop();
 		node.keys.unshift(parent.keys[index - 1]);
-		node.children.unshift(leftLastChildren);
+		leftLastChildren && node.children.unshift(leftLastChildren);
 		parent.keys.splice(index - 1, 1, leftLastKey);
 	}
 
@@ -228,11 +203,10 @@ class BTree {
 		node.keys.push(parent.keys[index], ...rightSibling.keys);
 		node.children.push(...rightSibling.children);
 		if (parent.keys.length == 1) {
-			return node;
+			this.root = node;
 		}
 		parent.children.splice(index + 1, 1);
 		parent.keys.splice(index, 1);
-		return parent;
 	}
 	/**
 	 *
@@ -244,15 +218,15 @@ class BTree {
 		const leftSibling = parent.children[index - 1];
 		node.keys.unshift(...leftSibling.keys, parent.keys[index - 1]);
 		node.children.unshift(...leftSibling.children);
-		if (parent.keys.length == 1) return node;
-
+		if (parent.keys.length == 1) {
+			this.root = node;
+		}
 		parent.children.splice(index - 1, 1);
 		parent.keys.splice(index - 1, 1);
-		return parent;
 	}
 }
 
-const data = Array(20)
+const data = Array(9)
 	.fill(1)
 	.map((item, index) => index);
 
@@ -283,8 +257,24 @@ const printTree = (data, deeps = [1]) => {
 console.log(printTree(btree.root));
 
 btree.delete(2);
+
 res = "";
 console.log(printTree(btree.root));
+
+btree.delete(3);
+res = "";
+console.log(printTree(btree.root));
+
+btree.delete(5);
+
+res = "";
+console.log(printTree(btree.root));
+
+// btree.delete(0);
+// btree.delete(0);
+
+// res = "";
+// console.log(printTree(btree.root));
 
 // btree.delete(1);
 // btree.delete(0);
