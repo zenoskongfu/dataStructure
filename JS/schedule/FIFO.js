@@ -23,12 +23,15 @@ class Task {
 	executeTime = 0;
 	waitTime = 0;
 	leftTime = 0;
+	finishTime = 0;
+	priority = 0;
 
-	constructor(arrivalTime, totalTime, name) {
+	constructor(arrivalTime, totalTime, name, priority) {
 		this.arrivalTime = arrivalTime;
 		this.totalTime = totalTime;
 		this.leftTime = this.totalTime;
 		this.name = name || "Task" + Math.random();
+		this.priority = priority || 0;
 	}
 
 	execute() {
@@ -47,7 +50,9 @@ class Task {
 class schedule {
 	time = 0;
 	executeTask = null;
+	/** @type {Task[]} taskInfo */
 	waitTaskQueue = [];
+	/** @type {Task[]} taskInfo */
 	pendingTaskQueue = [];
 	finishTask = [];
 	/** @type {Executer} */
@@ -85,7 +90,11 @@ class schedule {
 		}
 
 		//判断当前任务是否执行完成，如果执行完成，就上新任务，如果没有，就跳过
-		this.SRTN();
+		// this.SJF();
+		// this.FIFO();
+		// this.SRTN();
+		// this.timeSliceSchedule();
+		this.prioritySchedule();
 		if (this.executeTask) this.executer.execute();
 	}
 
@@ -133,21 +142,58 @@ class schedule {
 			}
 		}
 	}
+	fullTimeSlice = 2;
+	timeSlice = 0;
+	timeSliceSchedule() {
+		this.timeSlice++;
+		if (this.waitTaskQueue.length) {
+			if (this.executeTask != null && this.timeSlice < this.fullTimeSlice) return;
+			const newTask = this.waitTaskQueue.shift();
+
+			if (this.executeTask == null) {
+				this.executeTask = newTask;
+			} else {
+				this.waitTaskQueue.push(this.executeTask);
+				this.executeTask = newTask;
+			}
+			this.timeSlice = 0;
+		}
+	}
+
+	prioritySchedule() {
+		if (this.waitTaskQueue.length) {
+			let index = 0;
+			for (let i = 0; i < this.waitTaskQueue.length; i++) {
+				if (this.waitTaskQueue[index].priority < this.waitTaskQueue[i].priority) {
+					index = i;
+				}
+			}
+			const newTask = this.waitTaskQueue[index];
+			if (this.executeTask == null) {
+				this.executeTask = newTask;
+				this.waitTaskQueue.splice(index, 1);
+			} else if (this.executeTask.priority < newTask.priority) {
+				this.waitTaskQueue.push(this.executeTask);
+				this.executeTask = newTask;
+				this.waitTaskQueue.splice(index, 1);
+			}
+		}
+	}
 
 	judgeNewTask() {
 		let addedTaskIndex = [];
 		for (let i = 0; i < this.taskInfo.length; i++) {
 			if (this.taskInfo[i].arrivalTime <= this.time) {
-				const { arrivalTime, totalTime, name } = this.taskInfo[i];
-				this.addTask(new Task(arrivalTime, totalTime, name));
+				const { arrivalTime, totalTime, name, priority } = this.taskInfo[i];
+				this.addTask(new Task(arrivalTime, totalTime, name, priority));
 				addedTaskIndex.push(i);
 				this.lastTaskIndex++;
 			} else {
 				break;
 			}
 		}
-		addedTaskIndex.forEach((item) => {
-			this.taskInfo.splice(item, 1);
+		this.taskInfo = this.taskInfo.filter((item, index) => {
+			return addedTaskIndex.includes(index) == false;
 		});
 	}
 }
@@ -165,12 +211,16 @@ class Executer {
 
 	execute() {
 		// this.recordInfo();
+		const schedule = this.schedule;
+		const executeTask = schedule.executeTask;
 
-		this.schedule.executeTask.execute();
+		executeTask.execute();
 		// 检查任务是否执行完成，如果完成就将任务删除
-		if (this.schedule.executeTask.leftTime == 0) {
-			this.schedule.finishTask.push(this.schedule.executeTask);
-			this.schedule.executeTask = null;
+		if (executeTask.leftTime == 0) {
+			schedule.finishTask.push(executeTask);
+			executeTask.finishTime = schedule.time;
+
+			schedule.executeTask = null;
 		}
 	}
 
@@ -183,7 +233,7 @@ class Executer {
 			return task
 				.map(
 					(item) =>
-						`${item.name}, arrivalTime: ${item.arrivalTime}, totalTime: ${item.totalTime}, waitTime: ${item.waitTime};`
+						`${item.name}, arrivalTime: ${item.arrivalTime}, totalTime: ${item.totalTime}, waitTime: ${item.waitTime}, finishTime: ${item.finishTime}`
 				)
 				.join("\n");
 		};
@@ -195,10 +245,10 @@ class Executer {
 }
 
 const taskInfo = [
-	{ name: "A", arrivalTime: 0, totalTime: 3 },
-	{ name: "B", arrivalTime: 1, totalTime: 1 },
-	{ name: "C", arrivalTime: 3, totalTime: 3 },
-	{ name: "D", arrivalTime: 5, totalTime: 1 },
+	{ name: "A", arrivalTime: 0, totalTime: 3, priority: 1 },
+	{ name: "B", arrivalTime: 1, totalTime: 2, priority: 2 },
+	{ name: "C", arrivalTime: 3, totalTime: 3, priority: 1 },
+	{ name: "D", arrivalTime: 5, totalTime: 1, priority: 2 },
 ];
 
 new schedule(taskInfo).startSchedule();

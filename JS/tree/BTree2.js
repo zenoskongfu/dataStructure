@@ -68,8 +68,6 @@ class BTree {
 		}
 		node.keys = node.keys.slice(0, mid);
 		node.children = node.children.slice(0, mid + 1);
-
-		return parent;
 	}
 
 	addKeys(node, value) {
@@ -226,7 +224,7 @@ class BTree {
 	}
 }
 
-const data = Array(9)
+const data = Array(16)
 	.fill(1)
 	.map((item, index) => index);
 
@@ -256,16 +254,16 @@ const printTree = (data, deeps = [1]) => {
 
 console.log(printTree(btree.root));
 
-btree.delete(2);
+btree.delete(12);
 
 res = "";
 console.log(printTree(btree.root));
 
-btree.delete(3);
+btree.delete(10);
 res = "";
 console.log(printTree(btree.root));
 
-btree.delete(5);
+btree.delete(1);
 
 res = "";
 console.log(printTree(btree.root));
